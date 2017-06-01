@@ -1,0 +1,71 @@
+﻿@model IEnumerable<WebApplication1.Controllers.MyModel>
+@{
+    ViewBag.Title = "WebGrid View";
+    var grid = new WebGrid(null,
+        defaultSort: ViewBag.sortCol,
+        sortFieldName: "sortCol",
+        sortDirectionFieldName: "sortDir",
+        rowsPerPage: ViewBag.rowsPerPage,
+         ajaxUpdateContainerId: "grid");
+    grid.Bind(Model, rowCount: ViewBag.count, autoSortAndPage: false);
+}
+
+<style type="text/css">
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        border-top: 1px solid lightgray;
+    }
+
+        .table td, th {
+            border: 1px solid lightgray;
+            padding: 3px 7px 3px 7px;
+        }
+</style>
+<h2>WebGrid</h2>
+@functions {//function for the arrows taken from http://www.mikesdotnetting.com/article/203/enhancing-the-webgrid-with-sort-arrows
+    public static string Sorter(string columnHeader, string columnName, WebGrid grid)
+    {
+        return string.Format("{0} {1}", columnHeader, grid.SortColumn == columnName ?
+            grid.SortDirection == SortDirection.Ascending ? "▲" :
+            "▼" : string.Empty);
+    }
+}
+<style type="text/css">
+    .left{
+        text-align:left
+    }
+    .right{
+        text-align:right
+    }
+</style>
+
+    <div>
+        @grid.GetHtml(
+        tableStyle: "table",
+        columns: grid.Columns(
+            grid.Column("OrderID", Sorter("Order ID", "OrderID", grid), style: "right"),
+            grid.Column("OrderDate", Sorter("Order Date", "OrderDate", grid),style: "right"),
+            grid.Column("Freight", Sorter("Freight ", "Freight", grid), format:@<text>@item.Freight.ToString("C")</text>, style: "right"),
+            grid.Column("ShipCity", Sorter("Ship City", "ShipCity", grid), style: "left"),
+            grid.Column("ShipCountry", Sorter("Ship Country", "ShipCountry", grid), style: "left"),
+            grid.Column("CompanyName", Sorter("Company Name", "CompanyName", grid), style: "left"),
+            grid.Column("ContactName", Sorter("Contact Name", "ContactName", grid), style: "left"),
+            grid.Column("EmpFirstName",Sorter("Emp First Name","EmpFirstName", grid), style: "left"),
+            grid.Column("EmpLastName",Sorter("Emp Last Name","EmpLastName",grid), style: "left")
+        ),
+        mode: WebGridPagerModes.All,
+        numericLinksCount: 10
+    )
+
+
+    </div>
+<div>
+        <h3>Ordering By:</h3>
+        <b>@grid.SortColumn</b> @grid.SortDirection
+</div>
+<div style="max-width: 100%;">
+    <h4>Request SQL:</h4>
+    <textarea id="styled" rows="16" cols="100" style="max-width: 100%;">@ViewBag.sql</textarea>
+    
+</div>
